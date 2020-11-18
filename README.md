@@ -10,6 +10,7 @@ An image editor made with Sciter.
 
 - Invert Colors
 - Undo & Redo
+- Black & White
 
 ## Usage
 

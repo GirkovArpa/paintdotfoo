@@ -79,6 +79,7 @@ $(li #menu-open) << event click {
   $(li #menu-save).state#disabled = false;
   $(li #menu-save-as).state#disabled = false;
   $(li #menu-invert-colors).state#disabled = false;
+  $(li #menu-black-and-white).state#disabled = false;
 }
 
 $(li #menu-save) << event click {
@@ -113,6 +114,20 @@ $(li #menu-invert-colors) << event click {
   const action = () => $(div .layer).filters.push([invert:1]);
   action();
   
+  const undo = function(which) {
+    if (which == UNDO) {
+      $(div .layer).filters.pop();
+    } else if (which == REDO) {
+      action();
+    }
+  }
+  addUndo(undo);
+}
+
+$(li #menu-black-and-white) << event click {
+  const action = () => $(div .layer).filters.push([grayscale:1.0]);
+  action();
+
   const undo = function(which) {
     if (which == UNDO) {
       $(div .layer).filters.pop();
