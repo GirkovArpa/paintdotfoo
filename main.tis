@@ -56,6 +56,13 @@ function self.ready() {
   view.move((sw / 2) - (w / 2), (sh / 2) - (h / 2), w, h, false);
 }
 
+function activeMenuItems() {
+  const lis = $$(#menu-file > li).concat($$(#menu-adjustments > li));
+  for (var li in lis) {
+    li.state#disabled = false;
+  }
+}
+
 $(li #menu-open) << event click {
   const { filter } = globalThis;
   const filename = view.selectFile(#open, filter);
@@ -76,10 +83,7 @@ $(li #menu-open) << event click {
     gfx.blendImage(image, 0, 0);
   }
 
-  $(li #menu-save).state#disabled = false;
-  $(li #menu-save-as).state#disabled = false;
-  $(li #menu-invert-colors).state#disabled = false;
-  $(li #menu-black-and-white).state#disabled = false;
+  activeMenuItems();
 }
 
 $(li #menu-save) << event click {
@@ -110,8 +114,8 @@ $(li #menu-redo) << event click {
   performRedo();
 }
 
-$(li #menu-invert-colors) << event click {
-  const action = () => $(div .layer).filters.push([invert:1]);
+function applyFilter(filter) {
+  const action = () => $(div .layer).filters.push(filter);
   action();
   
   const undo = function(which) {
@@ -124,19 +128,9 @@ $(li #menu-invert-colors) << event click {
   addUndo(undo);
 }
 
-$(li #menu-black-and-white) << event click {
-  const action = () => $(div .layer).filters.push([grayscale:1.0]);
-  action();
-
-  const undo = function(which) {
-    if (which == UNDO) {
-      $(div .layer).filters.pop();
-    } else if (which == REDO) {
-      action();
-    }
-  }
-  addUndo(undo);
-}
+$(li #menu-invert-colors).on("click", :: applyFilter([invert:1]));
+$(li #menu-black-and-white).on("click", :: applyFilter([grayscale:1.0]));
+$(li #menu-sepia).on("click", :: applyFilter([sepia:1.0]));
 
 $(li #menu-about) << event click {
   view.msgbox(#information,

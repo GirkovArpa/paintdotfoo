@@ -11,7 +11,7 @@
     <ul #menu-bar>
       <li>
         <caption>File</caption>
-        <menu>
+        <menu #menu-file>
           <li #menu-open>Open</li>
           <li #menu-save disabled>Save</li>
           <li #menu-save-as disabled>Save As</li>
@@ -19,16 +19,17 @@
       </li>
       <li>
         <caption>Edit</caption>
-        <menu>
+        <menu #menu-edit>
           <li #menu-undo disabled>Undo</li>
           <li #menu-redo disabled>Redo</li>
         </menu>
       </li>
       <li>
         <caption>Adjustments</caption>
-        <menu>
+        <menu #menu-adjustments>
           <li #menu-black-and-white disabled>Black and White</li>
           <li #menu-invert-colors disabled>Invert Colors</li>
+          <li #menu-sepia disabled>Sepia</li>
         </menu>
       </li>
       <li>
