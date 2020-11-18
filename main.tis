@@ -1,0 +1,72 @@
+view.connectToInspector && view.connectToInspector(rootElement, inspectorIpAddress);
+
+const globalThis = {
+  filename: "",
+  filter: "PNG Files (*.png)|*.png|All Files (*.*)|*.*",
+  extension: "png",
+  undoList: [],
+  redoList: []
+};
+
+function self.ready() {
+  const w = 625dip;
+  const h = 306dip;
+  const (sw, sh) = view.screenBox(#frame, #dimension);
+  view.move((sw / 2) - (w / 2), (sh / 2) - (h / 2), w, h, false);
+}
+
+$(li #menu-open) << event click {
+  const { filter } = globalThis;
+  const filename = view.selectFile(#open, filter);
+  if (! filename) return;
+
+  globalThis.filename = filename;
+
+  const image = Image.fromBytes(Bytes.load(filename));
+  const width = image.width;
+  const height = image.height;
+  
+  $(div .layer).style.set { width: width, height: height };
+  $(div .layer).filters = [];
+  $(div .layer).paintContent = function(gfx) {
+    for (var filter in this.filters) {
+      gfx.pushLayer(#inner-box, filter);
+    }
+    gfx.blendImage(image, 0, 0);
+  }
+
+  $(li #menu-save).state#disabled = false;
+  $(li #menu-save-as).state#disabled = false;
+  $(li #menu-invert-colors).state#disabled = false;
+}
+
+$(li #menu-save) << event click {
+  const { filename, filter, extension } = globalThis;
+
+  const (w, h) = $(div .layer).box(#dimension);
+  const image = new Image(w, h, $(div .layer));
+  const bytes = image.toBytes();
+  bytes.save(filename);
+}
+
+$(li #menu-save-as) << event click {
+  const { filter, extension } = globalThis;
+  const filename = view.selectFile(#save, filter, extension);
+  if (! filename) return;
+
+  const (w, h) = $(div .layer).box(#dimension);
+  const image = new Image(w, h, $(div .layer));
+  const bytes = image.toBytes();
+  bytes.save(filename);
+}
+
+$(li #menu-invert-colors) << event click {
+  $(div .layer).filters.push([invert:1]);
+}
+
+$(li #menu-about) << event click {
+  view.msgbox(#information,
+    "This application uses Sciter Engine (https://sciter.com), © Terra Informatica Software, Inc.",
+    "About"
+  );
+}

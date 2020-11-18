@@ -1,0 +1,41 @@
+<html>
+
+  <head>
+    <title>Paint.FOO</title>
+    <link rel="stylesheet" href="main.css" />
+    <link rel="stylesheet" href="menu-vs.css" />
+    <script type="text/tiscript" src="main.tis"></script>
+  </head>
+
+  <body>
+    <ul #menu-bar>
+      <li>
+        <caption>File</caption>
+        <menu>
+          <li #menu-open>Open</li>
+          <li #menu-save disabled>Save</li>
+          <li #menu-save-as disabled>Save As</li>
+        </menu>
+      </li>
+      <li>
+        <caption>Adjustments</caption>
+        <menu>
+          <li #menu-invert-colors disabled>Invert Colors</li>
+        </menu>
+      </li>
+      <li>
+        <caption>Help</caption>
+        <menu>
+          <li #menu-about>About</li>
+        </menu>
+      </li>
+    </ul>
+
+    <div #canvas-container>
+      <div #canvas>
+        <div .layer></div>
+      </div>
+    </div>
+  </body>
+
+</html>
