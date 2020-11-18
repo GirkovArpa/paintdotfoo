@@ -1,5 +1,12 @@
 view.connectToInspector && view.connectToInspector(rootElement, inspectorIpAddress);
 
+function self.ready() {
+  const w = 625dip;
+  const h = 306dip;
+  const (sw, sh) = view.screenBox(#frame, #dimension);
+  view.move((sw / 2) - (w / 2), (sh / 2) - (h / 2), w, h, false);
+}
+
 const globalThis = {
   filename: "",
   filter: "PNG Files (*.png)|*.png|All Files (*.*)|*.*",
@@ -49,18 +56,12 @@ function performRedo() {
   addUndo(redo);
 }
 
-function self.ready() {
-  const w = 625dip;
-  const h = 306dip;
-  const (sw, sh) = view.screenBox(#frame, #dimension);
-  view.move((sw / 2) - (w / 2), (sh / 2) - (h / 2), w, h, false);
-}
-
 function activeMenuItems() {
   const lis = $$(#menu-file > li).concat($$(#menu-adjustments > li));
   for (var li in lis) {
     li.state#disabled = false;
   }
+  $(#menu-brightness-contrast).state#disabled = true;
 }
 
 $(li #menu-open) << event click {
@@ -131,6 +132,57 @@ function applyFilter(filter) {
 $(li #menu-invert-colors).on("click", :: applyFilter([invert:1]));
 $(li #menu-black-and-white).on("click", :: applyFilter([grayscale:1.0]));
 $(li #menu-sepia).on("click", :: applyFilter([sepia:1.0]));
+
+// https://gist.github.com/xposedbones/75ebaef3c10060a3ee3b246166caab56
+const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+
+function mapBrightness(brightness) {
+  // [-100, 0, 100] => [-1, 0, 1]
+  return map(brightness, -100.0, 100.0, -1.0, 1.0);
+}
+
+function mapContrast(contrast) {
+  // [-100, 0, 50, 100] => [0, 1, 2, 10]
+  if (contrast <= 0.0) return map(contrast, -100.0, 0.0, 0.0, 1.0);
+  if (contrast > 0.0 && contrast <= 50.0) return map(contrast, 0.0, 50.0, 1.0, 2.0);
+  return map(contrast, 50.0, 100.0, 2.0, 10.0);
+}
+
+function openBrightnessContrastPopup() {
+  $(div .layer).filters.push([brightness:0.0]);
+  $(div .layer).filters.push([contrast:1.0]);
+  $(div .layer).refresh();
+
+  function onBrightnessChange(brightness) {
+    const index = $(div .layer).filters.length - 2;
+    const value = mapBrightness(brightness);
+    $(div .layer).filters[index] = [brightness:value];
+    $(div .layer).refresh();
+  }
+
+  function onContrastChange(contrast) {
+    const index = $(div .layer).filters.length - 1;
+    const value = mapContrast(contrast.toFloat());
+    $(div .layer).filters[index] = [contrast:value];
+    $(div .layer).refresh();
+  }
+
+  const popup = view.dialog({ 
+    caption: "Brightness / Contrast",
+    url: self.url("brightness-contrast/main.htm"),
+    parameters: { 
+      foo: "bar",
+      callbacks: {
+        onBrightnessChange: onBrightnessChange,
+        onContrastChange: onContrastChange
+      }
+    }
+  });
+}
+
+$(li #menu-brightness-contrast) << event click {
+  openBrightnessContrastPopup();
+}
 
 $(li #menu-about) << event click {
   view.msgbox(#information,
