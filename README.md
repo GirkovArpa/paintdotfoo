@@ -9,6 +9,7 @@ An image editor made with Sciter.
 ## Features
 
 - Invert Colors
+- Undo & Redo
 
 ## Usage
 

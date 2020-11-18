@@ -4,9 +4,50 @@ const globalThis = {
   filename: "",
   filter: "PNG Files (*.png)|*.png|All Files (*.*)|*.*",
   extension: "png",
-  undoList: [],
-  redoList: []
+  undos: [],
+  redos: []
 };
+
+const UNDO = 0;
+const REDO = 1;
+
+function addUndo(fn) {
+  const { undos } = globalThis;
+  undos.push(fn);
+  $(li #menu-undo).state#disabled = undos.length == 0;
+}
+
+function addRedo(fn) {
+  const { redos } = globalThis;
+  redos.push(fn);
+  $(li #menu-redo).state#disabled = redos.length == 0;
+}
+
+function getUndo() {
+  const { undos } = globalThis;
+  const undo = undos.pop();
+  $(li #menu-undo).state#disabled = undos.length == 0;
+  return undo;
+}
+
+function getRedo() {
+  const { redos } = globalThis;
+  const redo = redos.pop();
+  $(li #menu-redo).state#disabled = redos.length == 0;
+  return redo;
+}
+
+function performUndo() {
+  const undo = getUndo();
+  undo(UNDO);
+  addRedo(undo);
+}
+
+function performRedo() {
+  const redo = getRedo();
+  redo(REDO);
+  addUndo(redo);
+}
 
 function self.ready() {
   const w = 625dip;
@@ -60,8 +101,26 @@ $(li #menu-save-as) << event click {
   bytes.save(filename);
 }
 
+$(li #menu-undo) << event click {
+  performUndo();
+}
+
+$(li #menu-redo) << event click {
+  performRedo();
+}
+
 $(li #menu-invert-colors) << event click {
-  $(div .layer).filters.push([invert:1]);
+  const action = () => $(div .layer).filters.push([invert:1]);
+  action();
+  
+  const undo = function(which) {
+    if (which == UNDO) {
+      $(div .layer).filters.pop();
+    } else if (which == REDO) {
+      action();
+    }
+  }
+  addUndo(undo);
 }
 
 $(li #menu-about) << event click {
