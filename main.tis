@@ -79,7 +79,7 @@ $(li #menu-open) << event click {
   $(div .layer).style.set { width: width, height: height };
   $(div .layer).filters = [];
   $(div .layer).paintContent = function(gfx) {
-    for (var filter in this.filters) {
+    for (var filter in this.filters.clone().reverse()) {
       gfx.pushLayer(#inner-box, filter);
     }
     gfx.blendImage(image, 0, 0);
