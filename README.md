@@ -13,6 +13,7 @@ A cross-platform image editor made with [Sciter](https://sciter.com).
 - Black & White
 - Sepia
 - Brightness & Contrast
+- Gaussian Blur
 
 ## Usage
 
