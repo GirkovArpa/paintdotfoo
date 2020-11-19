@@ -26,6 +26,10 @@ div#container {
   font-family: FontAwesome;
 }
 
+.tool:disabled {
+  filter: grayscale(100%);
+}
+
 .tool:hover {
   background-color: rgba(0, 0, 255, 0.3);
 }

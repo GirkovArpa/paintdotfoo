@@ -1,6 +1,51 @@
+const onRectangleSelectClick = function() {
+  for (var div in $$(div))
+  div.style.set { cursor: "crosshair" };
+}
+
 const toolsPopup = view.window({
   type: View.TOOL_WINDOW,
   url: self.url("tools/main.htm"),
   state: View.WINDOW_SHOWN,
-  caption: "Tools"
+  caption: "Tools",
+  parameters: {
+    callbacks: {
+      onRectangleSelectClick: onRectangleSelectClick
+    }
+  }
 });
+
+function isRectangleSelectActive() {
+  return toolsPopup.root.$(#rectangle-select).checked;
+}
+
+$(div#canvas) << event mousedown {
+  if (! isRectangleSelectActive()) return;
+
+  $(div.rectangle-select) || $(div#canvas).$append(<div .rectangle-select></div>);
+
+  const (cursorX, cursorY) = view.cursorLocation();
+  const (x, y) = this.box(#rectw, #border, #view);
+
+  $(div.rectangle-select).style.set {
+    left: cursorX - x,
+    top: cursorY - y,
+    width: 0,
+    height: 0
+  }
+}
+
+$(div#canvas) << event mousemove (evt) {
+  if (! isRectangleSelectActive()) return;
+  if (! evt.mainButton) return;
+
+  const (cursorX, cursorY) = view.cursorLocation();
+  const (x, y) = this.box(#rectw, #border, #view);
+  const left = $(div.rectangle-select).style["left"];
+  const top = $(div.rectangle-select).style["top"];
+
+  $(div.rectangle-select).style.set {
+    width: cursorX - x - left,
+    height: cursorY - y - top
+  }
+}
