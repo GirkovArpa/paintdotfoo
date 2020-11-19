@@ -1,6 +1,6 @@
 # Paint.FOO
 
-An image editor made with Sciter.
+A cross-platform image editor made with [Sciter](https://sciter.com).
 
 ## Preview
 
