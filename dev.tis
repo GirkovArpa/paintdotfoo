@@ -1,0 +1,6 @@
+const toolsPopup = view.window({
+  type: View.TOOL_WINDOW,
+  url: self.url("tools/main.htm"),
+  state: View.WINDOW_SHOWN,
+  caption: "Tools"
+});

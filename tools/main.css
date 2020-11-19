@@ -1,0 +1,39 @@
+* {
+  overflow: none;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: calc(24dip + 24dip);
+}
+
+div#container {
+  size: *;
+  flow: horizontal-flow;
+}
+
+input[type="radio"].tool {
+  style-set: std-radio-base;
+  behavior: radio;
+  display: inline-block;
+  width: 24dip;
+  height: 24dip;
+  background-size: auto;
+  background-repeat: no-repeat;
+  background-position: center;
+  outline-offset: -1px;
+}
+
+input[type="radio"].tool:hover {
+  background-color: rgba(0, 0, 255, 0.3);
+}
+
+input[type="radio"].tool:checked {
+  outline: 1px solid rgba(0, 0, 255, 1);
+  background-color: rgba(0, 0, 255, 0.5);
+}
+
+input[type="radio"].tool:active {
+  background-color: rgba(0, 0, 255, 0.75);
+}
