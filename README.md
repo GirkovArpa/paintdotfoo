@@ -12,7 +12,7 @@ An image editor made with Sciter.
 - Undo & Redo
 - Black & White
 - Sepia
-- :construction: Brightness & Contrast
+- Brightness & Contrast
 
 ## Usage
 

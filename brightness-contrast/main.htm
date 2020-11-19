@@ -24,7 +24,7 @@
           <input|integer .brightness min=-100 max=100 step=1 value=0>
         </div>
         <div .column-undo>
-          <button .undo><img src="sciter:undo.png" /></button>
+          <button .undo (brightness)><img src="sciter:undo.png" /></button>
         </div>
       </div>
 
@@ -43,7 +43,7 @@
           <input|integer .contrast min=-100 max=100 step=1 value=0>
         </div>
         <div .column-undo>
-          <button .undo><img src="sciter:undo.png"/></button>
+          <button .undo (contrast)><img src="sciter:undo.png"/></button>
         </div>
       </div>
 
@@ -56,8 +56,8 @@
       <div .row>
         <div .filler></div>
         <div .buttons>
-          <button>OK</button>
-          <button>Cancel</button>
+          <button #ok>OK</button>
+          <button #cancel>Cancel</button>
         </div>
       </div>
 

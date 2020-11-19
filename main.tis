@@ -5,21 +5,6 @@ function self.ready() {
   const h = 306dip;
   const (sw, sh) = view.screenBox(#frame, #dimension);
   view.move((sw / 2) - (w / 2), (sh / 2) - (h / 2), w, h, false);
-  view.root.timer(0.1s, :: test());
-}
-
-function test() {
-  view.dialog({ 
-    caption: "Brightness / Contrast",
-    url: self.url("brightness-contrast/main.htm"),
-    parameters: { 
-      foo: "bar",
-      callbacks: {
-        onBrightnessChange: (x) => {},
-        onContrastChange: (x) => {}
-      }
-    }
-  });
 }
 
 const globalThis = {
@@ -76,7 +61,6 @@ function activeMenuItems() {
   for (var li in lis) {
     li.state#disabled = false;
   }
-  //$(#menu-brightness-contrast).state#disabled = true;
 }
 
 $(li #menu-open) << event click {
@@ -168,17 +152,40 @@ function openBrightnessContrastPopup() {
   $(div .layer).filters.push([contrast:1.0]);
   $(div .layer).refresh();
 
-  function onBrightnessChange(brightness) {
+  const onBrightnessChange = function(brightness) {
     const index = $(div .layer).filters.length - 2;
     const value = mapBrightness(brightness);
     $(div .layer).filters[index] = [brightness:value];
     $(div .layer).refresh();
   }
 
-  function onContrastChange(contrast) {
+  const onContrastChange = function(contrast) {
     const index = $(div .layer).filters.length - 1;
     const value = mapContrast(contrast.toFloat());
     $(div .layer).filters[index] = [contrast:value];
+    $(div .layer).refresh();
+  }
+  
+  const onOk = function() {
+    const length = $(div .layer).filters.length;
+    const contrast = $(div .layer).filters.last[0];
+    const brightness = $(div .layer).filters[length - 2][0];
+
+    const undo = function(which) {
+      if (which == UNDO) {
+        $(div .layer).filters.pop();
+        $(div .layer).filters.pop();
+      } else if (which == REDO) {
+        $(div .layer).filters.push([brightness:brightness]);
+        $(div .layer).filters.push([contrast:contrast]);
+      }
+    }
+    addUndo(undo);
+  }
+
+  const onCancel = function() {
+    $(div .layer).filters.pop();
+    $(div .layer).filters.pop();
     $(div .layer).refresh();
   }
 
@@ -189,7 +196,9 @@ function openBrightnessContrastPopup() {
       foo: "bar",
       callbacks: {
         onBrightnessChange: onBrightnessChange,
-        onContrastChange: onContrastChange
+        onContrastChange: onContrastChange,
+        onOk: onOk,
+        onCancel: onCancel
       }
     }
   });
