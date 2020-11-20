@@ -26,4 +26,3 @@ Identify the `scapp` executable corresponding to your operating system from the 
 ## Credits
 
 - [Moon image](https://www.freeiconspng.com/img/44682)
-- Tool icons from [Paint.NET](https://www.getpaint.net/doc/latest/ToolsWindow.html)
