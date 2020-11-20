@@ -49,3 +49,38 @@ $(div#canvas) << event mousemove (evt) {
     height: cursorY - y - top
   }
 }
+
+$(div#canvas) << event mouseup (evt) {
+  if (! isRectangleSelectActive()) return;
+
+  const x = $(div.rectangle-select).style["left"];
+  const y = $(div.rectangle-select).style["top"];
+
+  const width = $(div.rectangle-select).style["width"];
+  const height = $(div.rectangle-select).style["height"];
+
+  const image = new Image(
+    $(div.layer).style["width"].toInteger(), 
+    $(div.layer).style["height"].toInteger(), 
+    $(div.layer));
+
+  const { filter, extension } = globalThis;
+  const filename = view.selectFile(#save, filter, extension);
+  const bytes = image.toBytes();
+  bytes.save(filename);
+
+  $(div#canvas).$append(<div .layer .selection></div>);
+
+  $(div.layer.selection).style["position"] = "absolute";
+  //$(div.layer.selection).style["left"] = x;
+  //$(div.layer.selection).style["top"] = y;
+  $(div.layer.selection).style["width"] = width;
+  $(div.layer.selection).style["height"] = height;
+
+  $(div.layer.selection).paintContent = function(gfx) {
+    gfx.pushLayer(x.toInteger(), y.toInteger(), width.toInteger(), height.toInteger());
+    gfx.blendImage(image, 0, 0);
+  }
+
+  $(div.layer.selection).refresh();
+}
