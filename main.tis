@@ -86,6 +86,8 @@ $(li #menu-open) << event click {
   }
 
   activeMenuItems();
+
+  View.all.find((v) => v.id == "layers").root.postEvent("layer-created");
 }
 
 $(li #menu-save) << event click {
@@ -128,6 +130,16 @@ function applyFilter(filter) {
     }
   }
   addUndo(undo);
+
+  const thumbnailImage = new Image(
+    $(div.layer.current).style["width"].toInteger(), 
+    $(div.layer.current).style["height"].toInteger(), 
+    $(div.layer.current)
+  );
+  View.all.find((v) => v.id == "layers").root.postEvent("update-layer-thumbnail", {
+    index: 0,
+    thumbnailImage: thumbnailImage 
+  });
 }
 
 $(li #menu-invert-colors).on("click", :: applyFilter([invert:1]));

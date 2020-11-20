@@ -1,3 +1,7 @@
+function onLayerSelect(index) {
+  stdout.println("layer index selected:", index);
+}
+
 const layersPopup = view.window({
   type: View.TOOL_WINDOW,
   url: self.url("layers/main.htm"),

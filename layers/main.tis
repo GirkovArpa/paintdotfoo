@@ -3,4 +3,24 @@ function self.ready() {
   const h = self.intrinsicHeight(w);
   const (sw, sh) = view.screenBox(#frame, #dimension);
   view.move((sw / 2) - (w / 2), (sh / 2) - (h / 2), w, h, true);
+  view.id = "layers";
+}
+
+
+event click $(li) (evt) {
+  view.parameters.callbacks.onLayerSelect(this.parent.$$(li).indexOf(this));
+} 
+
+event layer-created() {
+  const number = $$(li).length;
+  $(ul).$append(<li><div .layer-thumbnail></div><span>Layer {number}</span></li>);
+}
+
+event update-layer-thumbnail (evt) {
+  const thumbnailImage = evt.data.thumbnailImage;
+  const index = evt.data.index;
+
+  $$(li)[index].$(.layer-thumbnail).paintContent = function(gfx) {
+    gfx.blendImage(thumbnailImage, 0, 0);
+  }
 }

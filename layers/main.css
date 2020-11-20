@@ -15,16 +15,36 @@ div#container {
 
 ul {
   size: *;
+  background: #303030;
+  list-style: none;
+  overflow-y: scroll;
 }
 
 li {
+  flow: horizontal;
+  border-spacing: 1em;
+  vertical-align: middle;
   behavior: radio;
+  height: 54dip;
+  width: *;
+  color: white;
+  padding: 0.5em;
+}
+
+li:hover, li:checked {
+  outline: 1dip solid rgba(255, 255, 255, 0.788);
+  outline-offset: -1dip;
 }
 
 li:hover {
-  background: cyan;
+  background: rgba(0, 255, 255, 0.432);
 }
 
-li:checked, li:active {
-  background: blue;
+li:checked {
+  background: rgba(0, 0, 255, 0.459);
+}
+
+div.layer-thumbnail {
+  size: 32dip;
+  background: white;
 }
