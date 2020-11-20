@@ -1,0 +1,30 @@
+* {
+  overflow: none;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 170dip;
+  height: 170dip;
+}
+
+div#container {
+  size: *;
+}
+
+ul {
+  size: *;
+}
+
+li {
+  behavior: radio;
+}
+
+li:hover {
+  background: cyan;
+}
+
+li:checked, li:active {
+  background: blue;
+}
