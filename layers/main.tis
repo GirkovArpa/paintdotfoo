@@ -8,15 +8,17 @@ function self.ready() {
 
 
 event click $(li) (evt) {
-  view.parameters.callbacks.onLayerSelect(this.parent.$$(li).indexOf(this));
+  view.parameters.callbacks.onLayerSelect($$(li).indexOf(this));
 } 
 
 event layer-created() {
   const number = $$(li).length;
-  $(ul).$append(<li><div .layer-thumbnail></div><span>Layer {number}</span></li>);
+  $(ul).$append(<li><div .layer-thumbnail></div><span>Layer {number + 1}</span></li>);
 }
 
+// https://stackoverflow.com/a/21351407/13378247
 function fitInBox(width, height, maxWidth, maxHeight, expandable) {
+  try {
     var aspect = width / height,
         initWidth = width,
         initHeight = height;
@@ -40,6 +42,9 @@ function fitInBox(width, height, maxWidth, maxHeight, expandable) {
         width: width,
         height: height
     };
+  } catch(e) {
+    return { width: 1, height: 1 };
+  }
 }
 
 event update-layer-thumbnail (evt) {
@@ -48,7 +53,11 @@ event update-layer-thumbnail (evt) {
 
   const { width, height } = fitInBox(thumbnailImage.width, thumbnailImage.height, 32, 32, false);
 
+  const y = (32 - height) / 2;
+
   $$(li)[index].$(.layer-thumbnail).paintContent = function(gfx) {
-    gfx.blendImage(thumbnailImage, 0, 0, width, height);
+    gfx.blendImage(thumbnailImage, 0, y, width, height);
   }
+
+  $$(li)[index].refresh();
 }

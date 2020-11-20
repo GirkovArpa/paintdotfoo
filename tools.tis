@@ -98,6 +98,5 @@ $(div#canvas) << event mouseup (evt) {
   }
 
   $(div.layer.current).refresh();
-
-  saveImageOfCurrentLayer();
+  View.all.find((v) => v.id == "layers").root.postEvent("layer-created");
 }

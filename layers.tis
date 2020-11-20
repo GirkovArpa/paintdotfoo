@@ -1,5 +1,6 @@
 function onLayerSelect(index) {
-  stdout.println("layer index selected:", index);
+  $(div.layer.current).attributes.removeClass("current");
+  $$(div.layer)[index].attributes.addClass("current");
 }
 
 const layersPopup = view.window({

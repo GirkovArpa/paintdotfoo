@@ -15,6 +15,7 @@ A cross-platform image editor made with [Sciter](https://sciter.com).
 - Brightness & Contrast
 - Gaussian Blur
 - :construction: Rectangle Select
+- :construction: Layers
 
 ## Usage
 

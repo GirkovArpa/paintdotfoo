@@ -7,6 +7,10 @@ function self.ready() {
   view.move((sw / 2) - (w / 2), (sh / 2) - (h / 2), w, h, false);
 }
 
+function emitLayerCreatedEvent() {
+  View.all.find((v) => v.id == "layers").root.postEvent("layer-created");
+}
+
 const globalThis = {
   filename: "",
   filter: "PNG Files (*.png)|*.png|All Files (*.*)|*.*",
@@ -22,12 +26,16 @@ function addUndo(fn) {
   const { undos } = globalThis;
   undos.push(fn);
   $(li #menu-undo).state#disabled = undos.length == 0;
+
+  updateLayerThumbnail($(div.layer.current));
 }
 
 function addRedo(fn) {
   const { redos } = globalThis;
   redos.push(fn);
   $(li #menu-redo).state#disabled = redos.length == 0;
+
+  updateLayerThumbnail($(div.layer.current));
 }
 
 function getUndo() {
@@ -48,21 +56,37 @@ function performUndo() {
   const undo = getUndo();
   undo(UNDO);
   addRedo(undo);
+
+  updateLayerThumbnail($(div.layer.current));
 }
 
 function performRedo() {
   const redo = getRedo();
   redo(REDO);
   addUndo(redo);
+
+  updateLayerThumbnail($(div.layer.current));
 }
 
-function activeMenuItems() {
+function activateMenuItems() {
   const lis = $$(#menu-file > li)
     .concat($$(#menu-adjustments > li))
     .concat($$(#menu-effects > li));
   for (var li in lis) {
     li.state#disabled = false;
   }
+}
+
+function updateLayerThumbnail(layer) {
+    const thumbnailImage = new Image(
+    layer.style["width"].toInteger(), 
+    layer.style["height"].toInteger(), 
+    layer
+  );
+  View.all.find((v) => v.id == "layers").root.postEvent("update-layer-thumbnail", {
+    index: $$(div.layer).indexOf(layer),
+    thumbnailImage: thumbnailImage 
+  });
 }
 
 $(li #menu-open) << event click {
@@ -75,6 +99,9 @@ $(li #menu-open) << event click {
   const image = Image.fromBytes(Bytes.load(filename));
   const width = image.width;
   const height = image.height;
+
+  $(div.layer.current).attributes.remove("current");
+  $(div#canvas).$append(<div.layer.current></div>);
   
   $(div.layer.current).style.set { width: width, height: height };
   $(div.layer.current).filters = [];
@@ -85,9 +112,9 @@ $(li #menu-open) << event click {
     gfx.blendImage(image, 0, 0);
   }
 
-  activeMenuItems();
+  activateMenuItems();
 
-  View.all.find((v) => v.id == "layers").root.postEvent("layer-created");
+  emitLayerCreatedEvent();
 }
 
 $(li #menu-save) << event click {
@@ -130,16 +157,6 @@ function applyFilter(filter) {
     }
   }
   addUndo(undo);
-
-  const thumbnailImage = new Image(
-    $(div.layer.current).style["width"].toInteger(), 
-    $(div.layer.current).style["height"].toInteger(), 
-    $(div.layer.current)
-  );
-  View.all.find((v) => v.id == "layers").root.postEvent("update-layer-thumbnail", {
-    index: 0,
-    thumbnailImage: thumbnailImage 
-  });
 }
 
 $(li #menu-invert-colors).on("click", :: applyFilter([invert:1]));
