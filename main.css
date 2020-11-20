@@ -34,7 +34,7 @@ div.layer.current {
 }
 
 div.rectangle-select {
-  z-index: 100;
+  z-index: 999;
   left: 0px;
   top: 0px;
   position: absolute;

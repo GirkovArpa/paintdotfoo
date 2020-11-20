@@ -68,6 +68,9 @@ function saveImageOfCurrentLayer() {
 $(div#canvas) << event mouseup (evt) {
   if (! isRectangleSelectActive()) return;
 
+  const _x = $(div.current.layer).style["left"].toInteger();
+  const _y = $(div.current.layer).style["top"].toInteger();
+
   const x = $(div.rectangle-select).style["left"].toInteger();
   const y = $(div.rectangle-select).style["top"].toInteger();
 
@@ -91,7 +94,7 @@ $(div#canvas) << event mouseup (evt) {
       gfx.pushLayer(#inner-box, filter);
     }
     gfx.pushLayer(0, 0, width, height);
-    gfx.blendImage(image, -x, -y);
+    gfx.blendImage(image, -x + _x, -y + _y);
   }
 
   $(div.layer.current).refresh();
