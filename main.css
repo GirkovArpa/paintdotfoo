@@ -29,7 +29,12 @@ div.layer {
   top: 0;
 }
 
+div.layer.current {
+  z-index: 99;
+}
+
 div.rectangle-select {
+  z-index: 100;
   left: 0px;
   top: 0px;
   position: absolute;

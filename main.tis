@@ -76,9 +76,9 @@ $(li #menu-open) << event click {
   const width = image.width;
   const height = image.height;
   
-  $(div .layer).style.set { width: width, height: height };
-  $(div .layer).filters = [];
-  $(div .layer).paintContent = function(gfx) {
+  $(div.layer.current).style.set { width: width, height: height };
+  $(div.layer.current).filters = [];
+  $(div.layer.current).paintContent = function(gfx) {
     for (var filter in this.filters.clone().reverse()) {
       gfx.pushLayer(#inner-box, filter);
     }
@@ -91,8 +91,8 @@ $(li #menu-open) << event click {
 $(li #menu-save) << event click {
   const { filename, filter, extension } = globalThis;
 
-  const (w, h) = $(div .layer).box(#dimension);
-  const image = new Image(w, h, $(div .layer));
+  const (w, h) = $(div.layer.current).box(#dimension);
+  const image = new Image(w, h, $(div.layer.current));
   const bytes = image.toBytes();
   bytes.save(filename);
 }
@@ -102,8 +102,8 @@ $(li #menu-save-as) << event click {
   const filename = view.selectFile(#save, filter, extension);
   if (! filename) return;
 
-  const (w, h) = $(div .layer).box(#dimension);
-  const image = new Image(w, h, $(div .layer));
+  const (w, h) = $(div.layer.current).box(#dimension);
+  const image = new Image(w, h, $(div.layer.current));
   const bytes = image.toBytes();
   bytes.save(filename);
 }
@@ -117,12 +117,12 @@ $(li #menu-redo) << event click {
 }
 
 function applyFilter(filter) {
-  const action = () => $(div .layer).filters.push(filter);
+  const action = () => $(div.layer.current).filters.push(filter);
   action();
   
   const undo = function(which) {
     if (which == UNDO) {
-      $(div .layer).filters.pop();
+      $(div.layer.current).filters.pop();
     } else if (which == REDO) {
       action();
     }
@@ -154,45 +154,45 @@ function mapGaussianBlurRadius(radius) {
 }
 
 function openBrightnessContrastPopup() {
-  $(div .layer).filters.push([brightness:0.0]);
-  $(div .layer).filters.push([contrast:1.0]);
-  $(div .layer).refresh();
+  $(div.layer.current).filters.push([brightness:0.0]);
+  $(div.layer.current).filters.push([contrast:1.0]);
+  $(div.layer.current).refresh();
 
   const onBrightnessChange = function(brightness) {
-    const index = $(div .layer).filters.length - 2;
+    const index = $(div.layer.current).filters.length - 2;
     const value = mapBrightness(brightness);
-    $(div .layer).filters[index] = [brightness:value];
-    $(div .layer).refresh();
+    $(div.layer.current).filters[index] = [brightness:value];
+    $(div.layer.current).refresh();
   }
 
   const onContrastChange = function(contrast) {
-    const index = $(div .layer).filters.length - 1;
+    const index = $(div.layer.current).filters.length - 1;
     const value = mapContrast(contrast.toFloat());
-    $(div .layer).filters[index] = [contrast:value];
-    $(div .layer).refresh();
+    $(div.layer.current).filters[index] = [contrast:value];
+    $(div.layer.current).refresh();
   }
   
   const onOk = function() {
-    const length = $(div .layer).filters.length;
-    const contrast = $(div .layer).filters.last[0];
-    const brightness = $(div .layer).filters[length - 2][0];
+    const length = $(div.layer.current).filters.length;
+    const contrast = $(div.layer.current).filters.last[0];
+    const brightness = $(div.layer.current).filters[length - 2][0];
 
     const undo = function(which) {
       if (which == UNDO) {
-        $(div .layer).filters.pop();
-        $(div .layer).filters.pop();
+        $(div.layer.current).filters.pop();
+        $(div.layer.current).filters.pop();
       } else if (which == REDO) {
-        $(div .layer).filters.push([brightness:brightness]);
-        $(div .layer).filters.push([contrast:contrast]);
+        $(div.layer.current).filters.push([brightness:brightness]);
+        $(div.layer.current).filters.push([contrast:contrast]);
       }
     }
     addUndo(undo);
   }
 
   const onCancel = function() {
-    $(div .layer).filters.pop();
-    $(div .layer).filters.pop();
-    $(div .layer).refresh();
+    $(div.layer.current).filters.pop();
+    $(div.layer.current).filters.pop();
+    $(div.layer.current).refresh();
   }
 
   const popup = view.dialog({ 
@@ -215,32 +215,32 @@ $(li #menu-brightness-contrast) << event click {
 }
 
 function openGaussianBlurPopup() {
-  $(div .layer).filters.push([blur:0]);
-  $(div .layer).refresh();
+  $(div.layer.current).filters.push([blur:0]);
+  $(div.layer.current).refresh();
 
   const onBlurRadiusChange = function(radius) {
-    const index = $(div .layer).filters.length - 2;
+    const index = $(div.layer.current).filters.length - 2;
     const value = mapGaussianBlurRadius(radius);
-    $(div .layer).filters.last[0] = value;
-    $(div .layer).refresh();
+    $(div.layer.current).filters.last[0] = value;
+    $(div.layer.current).refresh();
   }
   
   const onOk = function() {
-    const blur = $(div .layer).filters.last[0];
+    const blur = $(div.layer.current).filters.last[0];
 
     const undo = function(which) {
       if (which == UNDO) {
-        $(div .layer).filters.pop();
+        $(div.layer.current).filters.pop();
       } else if (which == REDO) {
-        $(div .layer).filters.push([blur:blur]);
+        $(div.layer.current).filters.push([blur:blur]);
       }
     }
     addUndo(undo);
   }
 
   const onCancel = function() {
-    $(div .layer).filters.pop();
-    $(div .layer).refresh();
+    $(div.layer.current).filters.pop();
+    $(div.layer.current).refresh();
   }
 
   const popup = view.dialog({ 

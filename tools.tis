@@ -50,37 +50,51 @@ $(div#canvas) << event mousemove (evt) {
   }
 }
 
+function getImageOfCurrentLayer() {
+  const image = new Image(
+    $(div.layer.current).style["width"].toInteger(), 
+    $(div.layer.current).style["height"].toInteger(), 
+    $(div.layer.current)
+  );
+  return image;
+}
+
+function saveImageOfCurrentLayer() {
+  const image = getImageOfCurrentLayer();
+  const bytes = image.toBytes();
+  bytes.save("output.png");
+}
+
 $(div#canvas) << event mouseup (evt) {
   if (! isRectangleSelectActive()) return;
 
-  const x = $(div.rectangle-select).style["left"];
-  const y = $(div.rectangle-select).style["top"];
+  const x = $(div.rectangle-select).style["left"].toInteger();
+  const y = $(div.rectangle-select).style["top"].toInteger();
 
-  const width = $(div.rectangle-select).style["width"];
-  const height = $(div.rectangle-select).style["height"];
+  const width = $(div.rectangle-select).style["width"].toInteger();
+  const height = $(div.rectangle-select).style["height"].toInteger();
 
-  const image = new Image(
-    $(div.layer).style["width"].toInteger(), 
-    $(div.layer).style["height"].toInteger(), 
-    $(div.layer));
+  const image = getImageOfCurrentLayer();
 
-  const { filter, extension } = globalThis;
-  const filename = view.selectFile(#save, filter, extension);
-  const bytes = image.toBytes();
-  bytes.save(filename);
+  $(div.layer.current).attributes.removeClass("current");
 
-  $(div#canvas).$append(<div .layer .selection></div>);
+  $(div#canvas).$append(<div.layer.current></div>);
 
-  $(div.layer.selection).style["position"] = "absolute";
-  //$(div.layer.selection).style["left"] = x;
-  //$(div.layer.selection).style["top"] = y;
-  $(div.layer.selection).style["width"] = width;
-  $(div.layer.selection).style["height"] = height;
+  $(div.layer.current).style["left"] = x;
+  $(div.layer.current).style["top"] = y;
+  $(div.layer.current).style["width"] = width;
+  $(div.layer.current).style["height"] = height;
 
-  $(div.layer.selection).paintContent = function(gfx) {
-    gfx.pushLayer(x.toInteger(), y.toInteger(), width.toInteger(), height.toInteger());
-    gfx.blendImage(image, 0, 0);
+  $(div.layer.current).filters = [];
+  $(div.layer.current).paintContent = function(gfx) {
+    for (var filter in this.filters.clone().reverse()) {
+      gfx.pushLayer(#inner-box, filter);
+    }
+    gfx.pushLayer(0, 0, width, height);
+    gfx.blendImage(image, -x, -y);
   }
 
-  $(div.layer.selection).refresh();
+  $(div.layer.current).refresh();
+
+  saveImageOfCurrentLayer();
 }
