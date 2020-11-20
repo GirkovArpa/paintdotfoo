@@ -16,11 +16,39 @@ event layer-created() {
   $(ul).$append(<li><div .layer-thumbnail></div><span>Layer {number}</span></li>);
 }
 
+function fitInBox(width, height, maxWidth, maxHeight, expandable) {
+    var aspect = width / height,
+        initWidth = width,
+        initHeight = height;
+
+    if (width > maxWidth || height < maxHeight) {
+        width = maxWidth;
+        height = Math.floor(width / aspect);
+    }
+
+    if (height > maxHeight || width < maxWidth) {
+        height = maxHeight;
+        width = Math.floor(height * aspect);
+    }
+
+    if (!!expandable === false && (width >= initWidth || height >= initHeight)) {
+        width = initWidth;
+        height = initHeight;
+    }
+
+    return {
+        width: width,
+        height: height
+    };
+}
+
 event update-layer-thumbnail (evt) {
   const thumbnailImage = evt.data.thumbnailImage;
   const index = evt.data.index;
 
+  const { width, height } = fitInBox(thumbnailImage.width, thumbnailImage.height, 32, 32, false);
+
   $$(li)[index].$(.layer-thumbnail).paintContent = function(gfx) {
-    gfx.blendImage(thumbnailImage, 0, 0);
+    gfx.blendImage(thumbnailImage, 0, 0, width, height);
   }
 }
